@@ -4,7 +4,7 @@
 
 One needs to point out that it will be helpful if the programming language permits functions to be called before they are defined. That way, the document is not forced to follow the sequence that the source code demands.
 
-There are multiple ways to use this tool. The documentation can be inside an html document. That documnet could contain other things that supplement the exposition of the documentation like dynamic charts with the use of javascript (example here). In other cases, it can simply be a mardown file. Thus , one needs to specify if we deal with html documents or markdown files. 
+There are multiple ways to use this tool. The documentation can be inside an html document. That document could contain other things that supplement the exposition of the documentation like dynamic charts with the use of javascript (example here). In other cases, it can simply be a mardown file. Thus , one needs to specify if we deal with html documents or markdown files. 
 
 Moreover, one could generate the documentation of the whole project recusively or one might like to perform custom actions between each source code file generation. Thus we allow someone to specify a directory and recursively generate the source code for each file or specify a single file.
 
