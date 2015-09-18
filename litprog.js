@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 
 var recursively = false;
 var html = false;
@@ -35,7 +36,6 @@ if (source_path == null || ext == null || help == true) {
   console.log("\nlitprog options source_path -ext lang_extension\n\nThis program defaults at generating the source code of a single Markdown file.\nTo change that behaviour, use the different options.\n\nOptions\n\n-html : Generate the source code from an html document.\n-r : Recursively generate all the files of the specified directory that end in '.md' or '.html'.\n-h : Show this help page.\n");
 process.exit(0);
 }
-
 var cheerio = require('cheerio');
 
 function extract_markdown_from_html(cheerio,file) {
@@ -46,16 +46,14 @@ function extract_markdown_from_html(cheerio,file) {
   });
   return documentation;
 }
-
 function extract_code_from_markdown(markdown) {
   var code = "";
-  var temp = markdown.split("\`\`\`");
+  var temp = markdown.split("\`\`\`\n");
   for(var i = 1; i < temp.length; i = i+2) {
     code +=temp[i]; 
   }
   return code;
 }
-
 var fs = require("fs");
 function load_file(path) {
   var file;
@@ -67,7 +65,6 @@ function load_file(path) {
   }
   return file;
 }
-
 function extract_single_file(path,html,ext) {
 
   var is_html = path.slice(-4) == "html";

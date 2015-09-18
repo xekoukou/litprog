@@ -9,6 +9,8 @@ There are multiple usecases for such a tool. The documentation can be inside an 
 Moreover, one could generate the documentation of the whole project recusively or one might like to perform custom actions between each generation. Thus we allow someone to specify a directory and recursively generate the source code for each file or specify a single file.
 
 ```
+#!/usr/bin/env node
+
 var recursively = false;
 var html = false;
 var ext = null;
@@ -67,7 +69,7 @@ Then we extract the code from the markdown document.
 ```
 function extract_code_from_markdown(markdown) {
   var code = "";
-  var temp = markdown.split("\`\`\`");
+  var temp = markdown.split("\`\`\`\n");
   for(var i = 1; i < temp.length; i = i+2) {
     code +=temp[i]; 
   }
