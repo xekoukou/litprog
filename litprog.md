@@ -1,12 +1,12 @@
 # litprog
 
-**litprog** is a tool that helps programmers put the code of the program inside the documentation of the program. What it does is to extract all code pieces from the documents and join them together to make the complete source code.
+**litprog** is a tool that helps programmers put the code of the program inside the documentation. What it does is to extract all code pieces from each document and join them together to form the complete source code file.
 
-One needs to point out that it is helfull if the programming language permits functions to be called before they are defined. That way, the document is not forced to follow the sequence that the source code demands.
+One needs to point out that it will be helpful if the programming language permits functions to be called before they are defined. That way, the document is not forced to follow the sequence that the source code demands.
 
-There are multiple usecases for such a tool. The documentation can be inside an html document. That documnet could contain other things that supplement the exposition of the documentation like dynamic charts with the use of javascript (example here). In other cases, it can simply be a mardown file. Thus , one needs to specify if we deal with html documents or markdown files. 
+There are multiple ways to use this tool. The documentation can be inside an html document. That documnet could contain other things that supplement the exposition of the documentation like dynamic charts with the use of javascript (example here). In other cases, it can simply be a mardown file. Thus , one needs to specify if we deal with html documents or markdown files. 
 
-Moreover, one could generate the documentation of the whole project recusively or one might like to perform custom actions between each generation. Thus we allow someone to specify a directory and recursively generate the source code for each file or specify a single file.
+Moreover, one could generate the documentation of the whole project recusively or one might like to perform custom actions between each source code file generation. Thus we allow someone to specify a directory and recursively generate the source code for each file or specify a single file.
 
 ```
 #!/usr/bin/env node
@@ -64,7 +64,7 @@ function extract_markdown_from_html(cheerio,file) {
 }
 ```
 
-Then we extract the code from the markdown document.
+We extract the code from the markdown document.
 
 ```
 function extract_code_from_markdown(markdown) {
@@ -77,7 +77,7 @@ function extract_code_from_markdown(markdown) {
 }
 ```
 
-Here we load a single file and report an error if it doesn't exists.
+We load a single file and report an error if it doesn't exists.
 
 ```
 var fs = require("fs");
@@ -93,7 +93,7 @@ function load_file(path) {
 }
 ```
 
-The remaining code deals with the different options.
+The remaining code deals with the options that are passed from the command line by calling the appropriate functions.
 
 ```
 function extract_single_file(path,html,ext) {
