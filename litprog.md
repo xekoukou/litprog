@@ -49,7 +49,7 @@ process.exit(0);
 }
 ```
 
-If it is an html document, we need to get all the parts that are markdown documentation. We get all divs that have the 'markdown class'. We use the cheerio library for that.
+If it is an html document, we need to get all the parts that are markdown documentation. We get all the elements that have the 'markdown class'. We use the cheerio library for that.
 
 ```
 var cheerio = require('cheerio');
@@ -57,7 +57,7 @@ var cheerio = require('cheerio');
 function extract_markdown_from_html(cheerio,file) {
   var $ = cheerio.load(file);
   var documentation = "";
-  $("div.markdown").each(function(){
+  $(".markdown").each(function(){
     documentation += $(this).text();
   });
   return documentation;
