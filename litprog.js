@@ -48,7 +48,7 @@ function extract_markdown_from_html(cheerio,file) {
 }
 function extract_code_from_markdown(markdown) {
   var code = "";
-  var temp = markdown.split("\`\`\`\n");
+  var temp = markdown.split(/\`\`\`.*\n/);
   for(var i = 1; i < temp.length; i = i+2) {
     code +=temp[i]; 
   }

@@ -8,7 +8,7 @@ There are multiple usecases for such a tool. The documentation can be inside an 
 
 Moreover, one could generate the documentation of the whole project recusively or one might like to perform custom actions between each generation. Thus we allow someone to specify a directory and recursively generate the source code for each file or specify a single file.
 
-```
+```javascript
 #!/usr/bin/env node
 
 var recursively = false;
@@ -51,7 +51,7 @@ process.exit(0);
 
 If it is an html document, we need to get all the parts that are markdown documentation. We get all divs that have the 'markdown class'. We use the cheerio library for that.
 
-```
+```javascript
 var cheerio = require('cheerio');
 
 function extract_markdown_from_html(cheerio,file) {
@@ -66,10 +66,10 @@ function extract_markdown_from_html(cheerio,file) {
 
 Then we extract the code from the markdown document.
 
-```
+```javascript
 function extract_code_from_markdown(markdown) {
   var code = "";
-  var temp = markdown.split("\`\`\`\n");
+  var temp = markdown.split(/\`\`\`.*\n/);
   for(var i = 1; i < temp.length; i = i+2) {
     code +=temp[i]; 
   }
@@ -79,7 +79,7 @@ function extract_code_from_markdown(markdown) {
 
 Here we load a single file and report an error if it doesn't exists.
 
-```
+```javascript
 var fs = require("fs");
 function load_file(path) {
   var file;
@@ -95,7 +95,7 @@ function load_file(path) {
 
 The remaining code deals with the different options.
 
-```
+```javascript
 function extract_single_file(path,html,ext) {
 
   var is_html = path.slice(-4) == "html";
