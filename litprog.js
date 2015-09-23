@@ -41,7 +41,7 @@ var cheerio = require('cheerio');
 function extract_markdown_from_html(cheerio,file) {
   var $ = cheerio.load(file);
   var documentation = "";
-  $("div.markdown").each(function(){
+  $(".markdown").each(function(){
     documentation += $(this).text();
   });
   return documentation;
