@@ -127,7 +127,7 @@ if(recursively) {
       if(stat.isDirectory()) {
         dir_rec(cpath + "/" + file);
       } else {
-        extract_single_file(source_path,html,ext);
+        extract_single_file(cpath + "/" + file,html,ext);
       }
     });
   }
