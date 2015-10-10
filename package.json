@@ -6,6 +6,12 @@
    },
    "bin": {
      "litprog":"litprog.js"
-   }
+   },
+    "author": "Apostolis Xekoukoulotakis",
+    "license": "AGPL",
+    "repository": {
+        "type": "git",
+        "url": "http://github.com/xekoukou/litprog.git"
+    }
 }
 
