@@ -14,7 +14,7 @@ Moreover, one could generate the documentation of the whole project recusively o
 var recursively = false;
 var html = false;
 var ext = null;
-var type = "";
+var label = "";
 var help = false;
 var source_path = null;
 
@@ -38,8 +38,8 @@ for (var i = 2; i <process.argv.length; i++) {
         i++;
         break;
         }
-      case "-type": {
-        type = " " + process.argv[i+1];
+      case "-lb": {
+        label = " " + process.argv[i+1];
         i++;
         break;
         }
@@ -50,9 +50,9 @@ for (var i = 2; i <process.argv.length; i++) {
 }
 
 if (source_path == null || ext == null || help == true) {
-  console.log("\nlitprog options source_path -ext lang_extension\n\nThis program defaults at generating the source code of a single Markdown file.\nTo change that behaviour, use the different options.\n\nOptions\n\n-html : Generate the source code from an html document.\n-r : Recursively generate all the files of the specified directory that end in '.md' or '.html'.\n-type <string> : Only gets the code blocks that are of type <string>. \n-h : Show this help page.\n");
+  console.log("\litprog source_path -ext lang_extension\nThis program defaults at getting the source code from a single Markdown file.\n\nOptions\n-html : Get the source code from an html document.\n-r : Recursively get the code from all the files of the specified directory that end in '.md' or '.html'.\n-lb <string> : Only gets the code blocks that have label <string>.\n-h : Show this help page.");
 process.exit(0);
-}
+}t
 ```
 
 If it is an html document, we need to get all the parts that are markdown documentation. We get all the elements that have the 'markdown class'. We use the cheerio library for that.
@@ -87,12 +87,12 @@ function highlight_language_string(ext) {
 }
 
 ```
-We extract the code from the markdown document. We use type to give special meaning to each block. This way, we can have multiple code blocks from the same language, but they might be used for something else like tests or examples.
-The type string is put exactly after the language string.
+We extract the code from the markdown document. We use label to give special meaning to each block. This way, we can have multiple code blocks from the same language, but they might be used for something else like tests or examples.
+The label string is put exactly after the language string.
 ```javascript
-function extract_code_from_markdown(markdown,language_string,type) {
+function extract_code_from_markdown(markdown,language_string,label) {
   var code = "";
-  var temp = markdown.split(new RegExp("\`\`\`" + language_string + type + ".*\n"));
+  var temp = markdown.split(new RegExp("\`\`\`" + language_string + label + ".*\n"));
   for(var i = 1; i < temp.length; i++) {
     code +=temp[i].split(new RegExp("\`\`\`.*\n"))[0]; 
   }
@@ -119,7 +119,7 @@ function load_file(path) {
 The remaining code deals with the options that are passed from the command line by calling the appropriate functions.
 
 ```javascript
-function extract_single_file(path,html,ext,language_string,type) {
+function extract_single_file(path,html,ext,language_string,label) {
 
   var is_html = path.slice(-4) == "html";
   var is_md = path.slice(-2) == "md";
@@ -137,7 +137,7 @@ function extract_single_file(path,html,ext,language_string,type) {
       markdown = file;
     }
 
-    var code = extract_code_from_markdown(markdown,language_string,type);
+    var code = extract_code_from_markdown(markdown,language_string,label);
     fs.writeFileSync(path_to_save + ext,code);
   }
 }
@@ -152,12 +152,12 @@ if(recursively) {
       if(stat.isDirectory()) {
         dir_rec(cpath + "/" + file);
       } else {
-        extract_single_file(cpath + "/" + file,html,ext,language_string,type);
+        extract_single_file(cpath + "/" + file,html,ext,language_string,label);
       }
     });
   }
   dir_rec(source_path);
 } else {
-  extract_single_file(source_path,html,ext,language_string,type);
+  extract_single_file(source_path,html,ext,language_string,label);
 }
 ```
