@@ -14,6 +14,7 @@ Moreover, one could generate the documentation of the whole project recusively o
 var recursively = false;
 var html = false;
 var ext = null;
+var type = "";
 var help = false;
 var source_path = null;
 
@@ -37,6 +38,11 @@ for (var i = 2; i <process.argv.length; i++) {
         i++;
         break;
         }
+      case "-type": {
+        type = " " + process.argv[i+1];
+        i++;
+        break;
+        }
       default: {
         source_path = arg;
         }
@@ -44,7 +50,7 @@ for (var i = 2; i <process.argv.length; i++) {
 }
 
 if (source_path == null || ext == null || help == true) {
-  console.log("\nlitprog options source_path -ext lang_extension\n\nThis program defaults at generating the source code of a single Markdown file.\nTo change that behaviour, use the different options.\n\nOptions\n\n-html : Generate the source code from an html document.\n-r : Recursively generate all the files of the specified directory that end in '.md' or '.html'.\n-h : Show this help page.\n");
+  console.log("\nlitprog options source_path -ext lang_extension\n\nThis program defaults at generating the source code of a single Markdown file.\nTo change that behaviour, use the different options.\n\nOptions\n\n-html : Generate the source code from an html document.\n-r : Recursively generate all the files of the specified directory that end in '.md' or '.html'.\n-type <string> : Only gets the code blocks that are of type <string>. \n-h : Show this help page.\n");
 process.exit(0);
 }
 ```
@@ -63,15 +69,32 @@ function extract_markdown_from_html(cheerio,file) {
   return documentation;
 }
 ```
+Code from multiple langauges can be at the same document. We use the ext varriable to only extract the correct language.
 
+```javascript
+function highlight_language_string(ext) {
+  switch(ext) {
+    case ".js": {
+      return "javascript";
+      }
+    case ".rs": {
+      return "rust";
+      }
+    default: {
+      return "";
+    }
+  }
+}
+
+```
 We extract the code from the markdown document.
 
 ```javascript
-function extract_code_from_markdown(markdown) {
+function extract_code_from_markdown(markdown,language_string,type) {
   var code = "";
-  var temp = markdown.split(/\`\`\`.*\n/);
-  for(var i = 1; i < temp.length; i = i+2) {
-    code +=temp[i]; 
+  var temp = markdown.split(new RegExp("\`\`\`" + language_string + type + ".*\n"));
+  for(var i = 1; i < temp.length; i++) {
+    code +=temp[i].split(new RegExp("\`\`\`.*\n"))[0]; 
   }
   return code;
 }
@@ -96,7 +119,7 @@ function load_file(path) {
 The remaining code deals with the options that are passed from the command line by calling the appropriate functions.
 
 ```javascript
-function extract_single_file(path,html,ext) {
+function extract_single_file(path,html,ext,language_string,type) {
 
   var is_html = path.slice(-4) == "html";
   var is_md = path.slice(-2) == "md";
@@ -114,10 +137,12 @@ function extract_single_file(path,html,ext) {
       markdown = file;
     }
 
-    var code = extract_code_from_markdown(markdown);
+    var code = extract_code_from_markdown(markdown,language_string,type);
     fs.writeFileSync(path_to_save + ext,code);
   }
 }
+
+var language_string = highlight_language_string(ext);
 
 if(recursively) {
   function dir_rec(cpath) {
@@ -127,12 +152,12 @@ if(recursively) {
       if(stat.isDirectory()) {
         dir_rec(cpath + "/" + file);
       } else {
-        extract_single_file(cpath + "/" + file,html,ext);
+        extract_single_file(cpath + "/" + file,html,ext,language_string,type);
       }
     });
   }
   dir_rec(source_path);
 } else {
-  extract_single_file(source_path,html,ext);
+  extract_single_file(source_path,html,ext,language_string,type);
 }
 ```
