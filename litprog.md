@@ -87,8 +87,8 @@ function highlight_language_string(ext) {
 }
 
 ```
-We extract the code from the markdown document.
-
+We extract the code from the markdown document. We use type to give special meaning to each block. This way, we can have multiple code blocks from the same language, but they might be used for something else like tests or examples.
+The type string is put exactly after the language string.
 ```javascript
 function extract_code_from_markdown(markdown,language_string,type) {
   var code = "";
