@@ -1,19 +1,14 @@
 #!/usr/bin/env node
 
-var recursively = false;
 var html = false;
-var ext = null;
 var label = "";
+var delimiter = "";
 var help = false;
 var source_path = null;
 
 for (var i = 2; i <process.argv.length; i++) {
     var arg = process.argv[i];
     switch (arg) {
-      case "-r": {
-        recursively = true;
-        break;
-        }
       case "-html": {
         html = true;
         break;
@@ -22,14 +17,13 @@ for (var i = 2; i <process.argv.length; i++) {
         help = true;
         break;
         }
-      case "-ext": {
-        ext = process.argv[i+1];
+      case "-lb": {
+        label = process.argv[i+1];
         i++;
         break;
         }
-      case "-lb": {
-        label = " " + process.argv[i+1];
-        i++;
+      case "-ar": {
+        delimiter = "%%%%\n";
         break;
         }
       default: {
@@ -38,8 +32,8 @@ for (var i = 2; i <process.argv.length; i++) {
     }
 }
 
-if (source_path == null || ext == null || help == true) {
-  console.log("\litprog source_path -ext lang_extension\nThis program defaults at getting the source code from a single Markdown file.\n\nOptions\n-html : Get the source code from an html document.\n-r : Recursively get the code from all the files of the specified directory that end in '.md' or '.html'.\n-lb <string> : Only gets the code blocks that have label <string>.\n-h : Show this help page.");
+if (source_path == null || help == true) {
+  console.log("\nlitprog source_path\nThis program defaults at getting the source code from a single Markdown file.\n\nOptions\n-html : Get the source code from an html document.\n-lb <string> : Only gets the code blocks that have label <string>.\n-ar: Adds '%%%%' delimiter between code blocks.\n-h : Show this help page.");
 process.exit(0);
 }
 var cheerio = require('cheerio');
@@ -52,27 +46,20 @@ function extract_markdown_from_html(cheerio,file) {
   });
   return documentation;
 }
-function highlight_language_string(ext) {
-  switch(ext) {
-    case ".js": {
-      return "javascript";
-      }
-    case ".rs": {
-      return "rust";
-      }
-    default: {
-      return "";
+function extract_code_from_markdown(markdown,label,delimiter) {
+  var code_blocks = [];
+  var label_regex = label.split(" ").join(" +");
+  var temp = markdown.split(new RegExp("\`\`\`" + label_regex + ".*\n"));
+  if(label_regex == "") {
+    for(var i = 1; i < temp.length; i = i + 2) {
+      code_blocks.push(temp[i]);
+    }
+  } else {
+    for(var i = 1; i < temp.length; i++) {
+      code_blocks.push(temp[i].split(new RegExp("\`\`\`.*\n"))[0]);
     }
   }
-}
-
-function extract_code_from_markdown(markdown,language_string,label) {
-  var code = "";
-  var temp = markdown.split(new RegExp("\`\`\`" + language_string + " *" + label + ".*\n"));
-  for(var i = 1; i < temp.length; i++) {
-    code +=temp[i].split(new RegExp("\`\`\`.*\n"))[0]; 
-  }
-  return code;
+  return code_blocks.join(delimiter);
 }
 var fs = require("fs");
 function load_file(path) {
@@ -85,7 +72,7 @@ function load_file(path) {
   }
   return file;
 }
-function extract_single_file(path,html,ext,language_string,label) {
+function extract_single_file(path,html,label,delimiter) {
 
   var is_html = path.slice(-4) == "html";
   var is_md = path.slice(-2) == "md";
@@ -94,35 +81,15 @@ function extract_single_file(path,html,ext,language_string,label) {
   } else {
     var file = load_file(path);
     var markdown;
-    var path_to_save;
     if(html) {
-      path_to_save = path.slice(0,-5);
       markdown = extract_markdown_from_html(cheerio,file); 
     } else {
-      path_to_save = path.slice(0,-3);
       markdown = file;
     }
 
-    var code = extract_code_from_markdown(markdown,language_string,label);
-    fs.writeFileSync(path_to_save + ext,code);
+    var code = extract_code_from_markdown(markdown,label,delimiter);
+    process.stdout.write(code);
   }
 }
 
-var language_string = highlight_language_string(ext);
-
-if(recursively) {
-  function dir_rec(cpath) {
-    var files = fs.readdirSync(cpath);
-    files.forEach(function(file){
-      var stat = fs.statSync(cpath + "/" + file);
-      if(stat.isDirectory()) {
-        dir_rec(cpath + "/" + file);
-      } else {
-        extract_single_file(cpath + "/" + file,html,ext,language_string,label);
-      }
-    });
-  }
-  dir_rec(source_path);
-} else {
-  extract_single_file(source_path,html,ext,language_string,label);
-}
+extract_single_file(source_path,html,label,delimiter);

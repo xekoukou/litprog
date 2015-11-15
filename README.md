@@ -15,14 +15,15 @@ npm install -g litprog
 litprog -h
 ```
 ```
-litprog source_path -ext lang_extension
+litprog source_path
 This program defaults at getting the source code from a single Markdown file.
 
 Options
 -html : Get the source code from an html document.
--r : Recursively get the code from all the files of the specified directory that end in '.md' or '.html'.
 -lb <string> : Only gets the code blocks that have label <string>.
+-ar: Adds '%%%%' delimiter between code blocks.
 -h : Show this help page.
+
 ```
 
 To use labels in code blocks and them rendering properly you need:
