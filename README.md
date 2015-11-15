@@ -24,3 +24,7 @@ Options
 -lb <string> : Only gets the code blocks that have label <string>.
 -h : Show this help page.
 ```
+
+To use labels in code blocks and them rendering properly you need:
+* [pagedown](https://github.com/ujifgc/pagedown).
+* [pagedown-extra](https://github.com/jmcmanus/pagedown-extra), the `fenced_code_gfm` extension.
