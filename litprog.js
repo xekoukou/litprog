@@ -3,7 +3,7 @@
 var recursively = false;
 var html = false;
 var ext = null;
-var type = "";
+var label = "";
 var help = false;
 var source_path = null;
 
@@ -27,8 +27,8 @@ for (var i = 2; i <process.argv.length; i++) {
         i++;
         break;
         }
-      case "-type": {
-        type = " " + process.argv[i+1];
+      case "-lb": {
+        label = " " + process.argv[i+1];
         i++;
         break;
         }
@@ -39,7 +39,7 @@ for (var i = 2; i <process.argv.length; i++) {
 }
 
 if (source_path == null || ext == null || help == true) {
-  console.log("\nlitprog options source_path -ext lang_extension\n\nThis program defaults at generating the source code of a single Markdown file.\nTo change that behaviour, use the different options.\n\nOptions\n\n-html : Generate the source code from an html document.\n-r : Recursively generate all the files of the specified directory that end in '.md' or '.html'.\n-type <string> : Only gets the code blocks that are of type <string>. \n-h : Show this help page.\n");
+  console.log("\litprog source_path -ext lang_extension\nThis program defaults at getting the source code from a single Markdown file.\n\nOptions\n-html : Get the source code from an html document.\n-r : Recursively get the code from all the files of the specified directory that end in '.md' or '.html'.\n-lb <string> : Only gets the code blocks that have label <string>.\n-h : Show this help page.");
 process.exit(0);
 }
 var cheerio = require('cheerio');
@@ -66,9 +66,9 @@ function highlight_language_string(ext) {
   }
 }
 
-function extract_code_from_markdown(markdown,language_string,type) {
+function extract_code_from_markdown(markdown,language_string,label) {
   var code = "";
-  var temp = markdown.split(new RegExp("\`\`\`" + language_string + type + ".*\n"));
+  var temp = markdown.split(new RegExp("\`\`\`" + language_string + " *" + label + ".*\n"));
   for(var i = 1; i < temp.length; i++) {
     code +=temp[i].split(new RegExp("\`\`\`.*\n"))[0]; 
   }
@@ -85,7 +85,7 @@ function load_file(path) {
   }
   return file;
 }
-function extract_single_file(path,html,ext,language_string,type) {
+function extract_single_file(path,html,ext,language_string,label) {
 
   var is_html = path.slice(-4) == "html";
   var is_md = path.slice(-2) == "md";
@@ -103,7 +103,7 @@ function extract_single_file(path,html,ext,language_string,type) {
       markdown = file;
     }
 
-    var code = extract_code_from_markdown(markdown,language_string,type);
+    var code = extract_code_from_markdown(markdown,language_string,label);
     fs.writeFileSync(path_to_save + ext,code);
   }
 }
@@ -118,11 +118,11 @@ if(recursively) {
       if(stat.isDirectory()) {
         dir_rec(cpath + "/" + file);
       } else {
-        extract_single_file(cpath + "/" + file,html,ext,language_string,type);
+        extract_single_file(cpath + "/" + file,html,ext,language_string,label);
       }
     });
   }
   dir_rec(source_path);
 } else {
-  extract_single_file(source_path,html,ext,language_string,type);
+  extract_single_file(source_path,html,ext,language_string,label);
 }

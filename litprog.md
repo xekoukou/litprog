@@ -52,7 +52,7 @@ for (var i = 2; i <process.argv.length; i++) {
 if (source_path == null || ext == null || help == true) {
   console.log("\litprog source_path -ext lang_extension\nThis program defaults at getting the source code from a single Markdown file.\n\nOptions\n-html : Get the source code from an html document.\n-r : Recursively get the code from all the files of the specified directory that end in '.md' or '.html'.\n-lb <string> : Only gets the code blocks that have label <string>.\n-h : Show this help page.");
 process.exit(0);
-}t
+}
 ```
 
 If it is an html document, we need to get all the parts that are markdown documentation. We get all the elements that have the 'markdown class'. We use the cheerio library for that.
@@ -92,7 +92,7 @@ The label string is put exactly after the language string.
 ```javascript
 function extract_code_from_markdown(markdown,language_string,label) {
   var code = "";
-  var temp = markdown.split(new RegExp("\`\`\`" + language_string + label + ".*\n"));
+  var temp = markdown.split(new RegExp("\`\`\`" + language_string + " *" + label + ".*\n"));
   for(var i = 1; i < temp.length; i++) {
     code +=temp[i].split(new RegExp("\`\`\`.*\n"))[0]; 
   }
