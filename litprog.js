@@ -17,23 +17,22 @@ for (var i = 2; i <process.argv.length; i++) {
         help = true;
         break;
         }
-      case "-lb": {
-        label = process.argv[i+1];
-        i++;
-        break;
-        }
       case "-ar": {
         delimiter = "%%%%\n";
         break;
         }
       default: {
         source_path = arg;
+        if(i + 1 != process.argv.length) {
+          label = process.argv[i+1];
+        }
+        i++;
         }
     }
 }
 
-if (source_path == null || help == true) {
-  console.log("\nlitprog source_path\nThis program defaults at getting the source code from a single Markdown file.\n\nOptions\n-html : Get the source code from an html document.\n-lb <string> : Only gets the code blocks that have label <string>.\n-ar: Adds '%%%%' delimiter between code blocks.\n-h : Show this help page.");
+if (source_path == null || label == "" || help == true) {
+  console.log("\nlitprog source_path label\nThis program defaults at getting the code blocks with the specified label from a single Markdown file.\n\nOptions\n-html : Get the code blocks from an html document.\n-ar: Adds '%%%%' delimiter between code blocks.\n-h : Show this help page.");
 process.exit(0);
 }
 var cheerio = require('cheerio');
@@ -49,14 +48,14 @@ function extract_markdown_from_html(cheerio,file) {
 function extract_code_from_markdown(markdown,label,delimiter) {
   var code_blocks = [];
   var label_regex = label.split(" ").join(" +");
-  var temp = markdown.split(new RegExp("\`\`\`" + label_regex + ".*\n"));
+  var temp = markdown.split(new RegExp("\`\`\`" + label_regex + " *\n"));
   if(label_regex == "") {
     for(var i = 1; i < temp.length; i = i + 2) {
       code_blocks.push(temp[i]);
     }
   } else {
     for(var i = 1; i < temp.length; i++) {
-      code_blocks.push(temp[i].split(new RegExp("\`\`\`.*\n"))[0]);
+      code_blocks.push(temp[i].split(new RegExp("\`\`\` *\n"))[0]);
     }
   }
   return code_blocks.join(delimiter);
