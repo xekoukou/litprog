@@ -32,7 +32,7 @@ for (var i = 2; i <process.argv.length; i++) {
 }
 
 if (source_path == null || label == "" || help == true) {
-  console.log("\nlitprog source_path label\nThis program defaults at getting the code blocks with the specified label from a single Markdown file.\n\nOptions\n-html : Get the code blocks from an html document.\n-ar: Adds '%%%%' delimiter between code blocks.\n-h : Show this help page.");
+  console.log("\nlitprog source_path label\nThis program defaults at getting the code blocks with the specified label from a single Markdown file.\n\nOptions\n-html : Get the code blocks from an html document(from tags with class 'markdown').\n-ar: Adds '%%%%' delimiter between code blocks.\n-h : Show this help page.");
 process.exit(0);
 }
 var cheerio = require('cheerio');
